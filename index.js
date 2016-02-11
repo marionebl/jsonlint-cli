@@ -16,6 +16,8 @@ var memoize = require('lodash.memoize');
 const read = denodeify(fs.readFile);
 const rc = denodeify(rcNodeBack);
 
+const pkg = require('./package.json');
+
 const defaults = {
 	ignore: ['node_modules/**/*'],
 	validate: null,
@@ -23,6 +25,24 @@ const defaults = {
 	env: 'json-schema-draft-04',
 	quiet: false,
 	pretty: false
+};
+
+const aliases = {
+	ignore: 'i',
+	validate: 's',
+	indent: 'w',
+	env: 'e',
+	quiet: 'q',
+	pretty: 'p'
+};
+
+const descriptions = {
+	ignore: 'glob pattern to exclude from linting',
+	validate: 'uri to schema to use for validation',
+	indent: 'whitespace to use for pretty printing',
+	env: 'json schema env to use for validation',
+	quiet: 'surpress all output',
+	pretty: 'pretty-print the input'
 };
 
 function repeat(s, count) {
@@ -362,7 +382,44 @@ function execute(settings) {
 	});
 }
 
+function printFlags() {
+	const flags = Object.keys(defaults)
+		.map(key => {
+			return [`--${aliases[key]}, --${key}`, `${descriptions[key]}, defaults to: "${defaults[key]}"`];
+		});
+
+	const lines = [
+		[`--h, --help`, `show this help`],
+		[`--v, --version`, `show jsonlint-cli version`]
+	].concat(flags);
+
+	const longestKeyLine = lines.sort((a, b) => b[0].length - a[0].length)[0];
+	const longest = longestKeyLine[0].length;
+
+	return lines
+		.map(line => `${line[0]}${' '.repeat(4 + longest - line[0].length)}${line[1]}`)
+		.join('\n');
+}
+
+function help() {
+	console.log(`
+${pkg.name} [options] [file] - ${pkg.description}
+
+${printFlags()}
+	`);
+}
+
 function main(options) {
+	if (options.help) {
+		help();
+		return Promise.resolve();
+	}
+
+	if (options.version) {
+		console.log(pkg.version);
+		return Promise.resolve();
+	}
+
 	return getSettings(options, process.cwd())
 		.then(execute);
 }
