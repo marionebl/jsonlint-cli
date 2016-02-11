@@ -1,7 +1,7 @@
 > jsonlint-cli - cli wrapper for jsonlint
 
 <p align="center">
-  <img src="./jsonlint-cli.svg" width="300" height="52" />
+  <img src="https://cdn.rawgit.com/marionebl/jsonlint-cli/master/jsonlint-cli.svg" width="300" height="52" />
 </p>
 
 Thin wrapper around [jsonlint](https://github.com/zaach/jsonlint) improving on its cli. It introduces glob expansion and advanced schema validation. Borrows heaviliy from `jsonlint` in every regard.
