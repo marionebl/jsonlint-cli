@@ -1,3 +1,9 @@
+<a name="0.2.6"></a>
+## [0.2.6](https://github.com/marionebl/jsonlint-cli/compare/v0.2.5...v0.2.6) (2016-02-11)
+
+
+
+
 <a name="0.2.5"></a>
 ## [0.2.5](https://github.com/marionebl/jsonlint-cli/compare/v0.2.4...v0.2.5) (2016-02-11)
 
