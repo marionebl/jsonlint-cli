@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
@@ -177,7 +178,7 @@ const lex = {
 	}
 };
 
-function schemaError(error) {
+function schemaError(error, schema) {
 	return Object.keys(error.validation)
 		.reduce((messages, key) => {
 			const validation = error.validation[key];
@@ -188,10 +189,14 @@ function schemaError(error) {
 					.map(name => lex[name] || lex.fallback)
 					.map((formatter, index) => {
 						const name = names[index];
+						const props = schema.properties || {};
+						const prop = props[key] || {};
 						return formatter(
 							key,
 							validation[name],
-							name
+							name,
+							prop[name] || '',
+							prop
 						);
 					})
 			);
@@ -256,7 +261,6 @@ function lint(source, sourcePath, settings) {
 				var formatted; // eslint-disable-line no-var
 				try {
 					formatted = formatJson(source, settings.indent);
-					console.log(formatted);
 				} catch (error) {
 					if (!settings.quiet) {
 						console.error(error);
@@ -266,11 +270,12 @@ function lint(source, sourcePath, settings) {
 
 			if (settings.validate) {
 				const environment = jjv(settings.env);
-				environment.addSchema('default', obtainSchema(settings.validate));
+				const schema = obtainSchema(settings.validate);
+				environment.addSchema('default', schema);
 				const errors = environment.validate('default', parsed);
 				if (errors) {
 					const jsonLintError = new Error([`"${absSourcePath}" fails against schema "${settings.validate}"`]
-						.concat(schemaError(errors)
+						.concat(schemaError(errors, schema)
 							.filter(Boolean)
 							.map(message => `		${message}`)
 						).join('\n'));
