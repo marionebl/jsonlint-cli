@@ -5,12 +5,13 @@
   "main": "index.js",
   "scripts": {
     "commit": "git-cz",
-    "changelog": "conventional-changelog -p angular -i changelog.md -s -r0 > changelog.md",
+    "changelog": "conventional-changelog --preset angular --infile changelog.md --same-file --output-unreleased",
+    "push": "git push && git push --tags",
     "release": "npm version $(conventional-recommended-bump -p angular)",
     "test": "parallelshell \"eslint index.js\" \"node index.js package.json\" ",
     "preversion": "npm test",
     "version": "npm run changelog && git add . && echo \"$(conventional-changelog -p angular)\" > .git/COMMITMSG.tmp",
-    "postversion": "git commit --amend -m \"chore(release): $(git log -1 --pretty=%B HEAD^..HEAD)\n$(cat .git/COMMITMSG.tmp)\" && rm .git/COMMITMSG.tmp && git push && git push --tags"
+    "postversion": "export RELEASE_VERSION=$(git log -1 --pretty=%B HEAD^..HEAD) && git tag -d v${RELEASE_VERSION} && git commit --amend -m \"chore(release): ${RELEASE_VERSION}\n$(cat .git/COMMITMSG.tmp)\" && git tag -a v${RELEASE_VERSION} -m \"$(cat .git/COMMITMSG.tmp)\" && rm .git/COMMITMSG.tmp"
   },
   "binary": {
     "jsonlint-cli": "./index.js"
