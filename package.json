@@ -6,7 +6,7 @@
   "scripts": {
     "commit": "git-cz",
     "changelog": "conventional-changelog --preset angular --infile changelog.md --same-file --output-unreleased",
-    "push": "git push && git push --tags && npm publish && hub create --message \"$(cat .git/COMMITMSG.tmp)\" $RELEASE_VERSION",
+    "push": "git push && git push --tags && hub create --message=\"$(cat .git/COMMITMSG.tmp)\" $RELEASE_VERSION && npm publish",
     "release": "npm version $(conventional-recommended-bump -p angular)",
     "test": "parallelshell \"eslint index.js\" \"node index.js package.json\" ",
     "preversion": "npm test",
