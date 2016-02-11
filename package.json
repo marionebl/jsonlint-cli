@@ -6,12 +6,12 @@
   "scripts": {
     "commit": "git-cz",
     "changelog": "conventional-changelog --preset angular --infile changelog.md --same-file --output-unreleased",
-    "push": "git push && git push --tags && npm publish",
+    "push": "git push && git push --tags && npm publish && hub create --message \"$(cat .git/COMMITMSG.tmp)\" $RELEASE_VERSION",
     "release": "npm version $(conventional-recommended-bump -p angular)",
     "test": "parallelshell \"eslint index.js\" \"node index.js package.json\" ",
     "preversion": "npm test",
     "version": "npm run changelog && git add . && echo \"$(conventional-changelog -p angular)\" > .git/COMMITMSG.tmp",
-    "postversion": "export RELEASE_VERSION=$(git log -1 --pretty=%B HEAD^..HEAD) && git tag -d v${RELEASE_VERSION} && git commit --amend -m \"chore(release): ${RELEASE_VERSION}\n$(cat .git/COMMITMSG.tmp)\" && git tag -a v${RELEASE_VERSION} -m \"$(cat .git/COMMITMSG.tmp)\" && rm .git/COMMITMSG.tmp"
+    "postversion": "export RELEASE_VERSION=$(git log -1 --pretty=%B HEAD^..HEAD) && git tag -d v${RELEASE_VERSION} && git commit --amend -m \"chore(release): ${RELEASE_VERSION}\n$(cat .git/COMMITMSG.tmp)\" && git tag -a v${RELEASE_VERSION} -m \"$(cat .git/COMMITMSG.tmp)\""
   },
   "binary": {
     "jsonlint-cli": "./index.js"
