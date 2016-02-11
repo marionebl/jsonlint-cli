@@ -13,6 +13,7 @@ const jjv = require('jjv');
 const request = require('sync-request');
 const mkdirp = require('mkdirp');
 var memoize = require('lodash.memoize');
+var minimatch = require('minimatch');
 
 const read = denodeify(fs.readFile);
 const rc = denodeify(rcNodeBack);
@@ -300,21 +301,26 @@ function readStdin() {
 	});
 }
 
-function getSettings(options, path) {
+function getSettings(options, file) {
+	const filePath = path.extname(file) ?
+		path.dirname(file) :
+		file;
+
 	const loaders = [
 		{
 			name: '.jsonlintrc',
-			path: [path],
-			append: true
+			path: [filePath],
+			prepend: [filePath]
 		},
 		{
 			name: '.jsonlintignore',
-			path: [path],
+			path: [filePath],
 			type: 'ini',
-			append: true
+			prepend: [filePath]
 		}
 	].map(loader => {
 		return rc(loader)
+			.then(config => Object.assign(config))
 			.catch(error => {
 				setTimeout(() => {
 					throw error;
@@ -325,8 +331,18 @@ function getSettings(options, path) {
 	return Promise.all(loaders)
 		.then(results => {
 			const configuration = results[0];
-			const ignore = Object.keys(results[1]);
-			return Object.assign({}, defaults, configuration, options, {
+			configuration._file = file;
+
+			const ignore = (options.ignore || [])
+				.concat(results[0].ignore || [])
+				.concat(Object.keys(results[1]));
+
+			const parsed = url.parse(configuration.validate);
+			configuration.validate = parsed.protocol && parsed.host ?
+				configuration.validate :
+				path.resolve(file, configuration.validate);
+
+			return Object.assign({}, defaults, options, configuration, {
 				ignore
 			});
 		});
@@ -347,36 +363,43 @@ function execute(settings) {
 
 	// read the glob if files are given
 	return globby(glob).then(paths => {
-		if (paths.length > 0) {
-			return Promise.all(
-				paths
-					.map(file => {
-						return Promise.all([
-							read(file)
-							.then(buffer => {
-								return {
-									content: buffer.toString('utf-8'),
-									path: file
-								};
-							}),
-							getSettings(settings, file)
-						]);
-					})
-					.map(payload => {
-						return payload
-							.then(results => {
-								const shipment = results[0];
-								const fileConfiguration = results[1];
+		Promise
+			.all(paths.map(file => {
+				return getSettings(settings, file);
+			}))
+			.then(configurations => {
+				return Promise.all(
+					configurations.map(configuration => {
+						// ignore could be changed by config files
+						const ignored = configuration.ignore
+							.filter(pattern => {
+								return minimatch(configuration._file, pattern) ||
+								path.basename(configuration._file) === pattern;
+							}).length > 0;
 
-								return lint(
-									shipment.content.toString('utf-8'),
-									shipment.path,
-									fileConfiguration
-								);
+						if (ignored) {
+							return null;
+						}
+						return read(configuration._file)
+							.then(content => {
+								return {
+									content: content.toString('utf-8'),
+									path: configuration._file,
+									configuration: configuration
+								};
 							});
 					})
-			);
-		}
+				).then(payload => {
+					if (!payload) {
+						return;
+					}
+					lint(
+						payload.content,
+						payload.path,
+						payload.configuration
+					);
+				});
+			});
 	});
 }
 
