@@ -30,6 +30,16 @@ npm install -g jsonlint-cli
 `jsonlint-cli` exposes a command line interface
 ```shell
 jsonlint-cli --help
+jsonlint-cli [options] [file] - cli wrapper for jsonlint
+
+--s, --validate    uri to schema to use for validation, defaults to: "null"
+--v, --version     show jsonlint-cli version
+--i, --ignore      glob pattern to exclude from linting, defaults to: "node_modules/**/*"
+--w, --indent      whitespace to use for pretty printing, defaults to: "  "
+--p, --pretty      pretty-print the input, defaults to: "false"
+--q, --quiet       surpress all output, defaults to: "false"
+--h, --help        show this help
+--e, --env         json schema env to use for validation, defaults to: "json-schema-draft-04"
 ```
 
 ## Configuration
