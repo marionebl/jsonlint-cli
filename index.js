@@ -258,14 +258,7 @@ function lint(source, sourcePath, settings) {
 				parser.parse(source);
 
 			if (settings.pretty && !settings.quiet) {
-				var formatted; // eslint-disable-line no-var
-				try {
-					formatted = formatJson(source, settings.indent);
-				} catch (error) {
-					if (!settings.quiet) {
-						console.error(error);
-					}
-				}
+				console.log(formatJson(source, settings.indent));
 			}
 
 			if (settings.validate) {
