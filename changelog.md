@@ -1,3 +1,15 @@
+<a name="0.2.7"></a>
+## [0.2.7](https://github.com/marionebl/jsonlint-cli/compare/v0.2.6...v0.2.7) (2016-02-11)
+
+
+### Bug Fixes
+
+* actually expose jsonlint-cli ([63510de](https://github.com/marionebl/jsonlint-cli/commit/63510de))
+* resolve local schemas properly ([fb345be](https://github.com/marionebl/jsonlint-cli/commit/fb345be))
+* use schema for validation messages again ([89bcbf9](https://github.com/marionebl/jsonlint-cli/commit/89bcbf9))
+
+
+
 <a name="0.2.6"></a>
 ## [0.2.6](https://github.com/marionebl/jsonlint-cli/compare/v0.2.5...v0.2.6) (2016-02-11)
 
