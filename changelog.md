@@ -1,3 +1,13 @@
+<a name="0.2.8"></a>
+## [0.2.8](https://github.com/marionebl/jsonlint-cli/compare/v0.2.7...v0.2.8) (2016-03-01)
+
+
+### Bug Fixes
+
+* add missing minimatch dependency ([1f72a5a](https://github.com/marionebl/jsonlint-cli/commit/1f72a5a))
+
+
+
 <a name="0.2.7"></a>
 ## [0.2.7](https://github.com/marionebl/jsonlint-cli/compare/v0.2.6...v0.2.7) (2016-02-11)
 
