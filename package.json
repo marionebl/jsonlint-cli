@@ -48,6 +48,7 @@
     "jjv": "1.0.2",
     "jsonlint": "1.6.2",
     "lodash.memoize": "4.0.1",
+    "minimatch": "3.0.0",
     "minimist": "1.2.0",
     "mkdirp": "0.5.1",
     "sync-request": "3.0.0"
