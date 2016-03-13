@@ -1,5 +1,81 @@
 #!/usr/bin/env node
-const fs = require('fs');
+const merge = require('lodash').merge;
+
+const cli = require('./library/cli');
+const fetchSchema = require('./library/fetch-schema');
+const getConfiguration = require('./library/get-configuration');
+const getInput = require('./library/get-input');
+const resolveKeys = require('./library/resolve-keys');
+const filter = require('./library/filter');
+const lint = require('./library/lint');
+const format = require('./library/format');
+const print = require('./library/print');
+const pkg = require('./package');
+
+// Main program
+function main(options) {
+	return getInput(options.input)
+		// Load file configurations
+		.then(getConfiguration)
+		// Fetch json schemas
+		.then(fetchSchema)
+		// Wait for resolution of async tasks
+		.then(resolveKeys)
+		.then(inputs => {
+			// Merge cli options on file configuration
+			return inputs.map(input => {
+				input.configuration = merge({}, input.configuration, options.flags);
+				return input;
+			});
+		})
+		.then(inputs => {
+			// Filter ignored files
+			return inputs.filter(filter);
+		})
+		.then(inputs => {
+			// Lint and validate files
+			return inputs.map(input => {
+				input.content.path = input.path;
+				input.data = lint(input.content, input.configuration, input.schema);
+				return input;
+			});
+		})
+		.then(inputs => {
+			// Format results
+			return inputs.map(input => {
+				input.formatted = format(input.data, input.configuration);
+				return input;
+			});
+		})
+		.then(inputs => {
+			// Print results
+			inputs.forEach(print);
+			return inputs;
+		});
+}
+
+// Start the engines
+main(cli)
+	.catch(error =>
+		setTimeout(() => {
+			if (error.type === pkg.name) {
+				console.error(error.message);
+				process.exit(1);
+			}
+			throw error;
+		})
+	);
+
+// handle unhandled rejections
+process.on('unhandledRejection', (reason, promise) => {
+	if (reason.type === pkg.name) {
+		process.exit(1);
+	}
+	console.log('Unhandled Rejection at: Promise ', promise, ' reason: ', reason);
+	throw reason;
+});
+
+/* const fs = require('fs');
 const path = require('path');
 const url = require('url');
 const crypto = require('crypto');
@@ -21,7 +97,7 @@ const rc = denodeify(rcNodeBack);
 const pkg = require('./package.json');
 
 const defaults = {
-	ignore: ['node_modules/**/*'],
+	ignore: ['node_modules'],
 	validate: null,
 	indent: '  ',
 	env: 'json-schema-draft-04',
@@ -337,10 +413,12 @@ function getSettings(options, file) {
 				.concat(results[0].ignore || [])
 				.concat(Object.keys(results[1]));
 
-			const parsed = url.parse(configuration.validate);
-			configuration.validate = parsed.protocol && parsed.host ?
-				configuration.validate :
-				path.resolve(file, configuration.validate);
+			if (configuration.validate) {
+				const parsed = url.parse(configuration.validate);
+				configuration.validate = parsed.protocol && parsed.host ?
+					configuration.validate :
+					path.resolve(file, configuration.validate);
+			}
 
 			return Object.assign({}, defaults, options, configuration, {
 				ignore
@@ -389,16 +467,18 @@ function execute(settings) {
 								};
 							});
 					})
-				).then(payload => {
-					if (!payload) {
-						return;
-					}
-					lint(
-						payload.content,
-						payload.path,
-						payload.configuration
-					);
-				});
+				);
+			})
+			.then(payloads => {
+				return Promise.all(
+					payloads.map(payload => {
+						return lint(
+							payload.content,
+							payload.path,
+							payload.configuration
+						);
+					})
+				);
 			});
 	});
 }
@@ -441,8 +521,12 @@ function main(options) {
 		return Promise.resolve();
 	}
 
-	return getSettings(options, process.cwd())
-		.then(execute);
+	return new Promise((resolve, reject) => {
+		getSettings(options, process.cwd())
+			.then(execute)
+			.then(resolve)
+			.catch(reject);
+	});
 }
 
 // parse cli flags
@@ -462,3 +546,10 @@ main(args)
 			});
 		}
 	});
+
+// Catch unhandled rejections globally
+process.on('unhandledRejection', (reason, promise) => {
+	console.log('Unhandled Rejection at: Promise ', promise, ' reason: ', reason);
+	throw reason;
+});
+*/
