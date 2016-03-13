@@ -1,3 +1,19 @@
+<a name="1.0.0"></a>
+# [1.0.0](https://github.com/marionebl/jsonlint-cli/compare/v0.2.8...v1.0.0) (2016-03-13)
+
+
+### Code Refactoring
+
+* split program into logical bits ([a7fe762](https://github.com/marionebl/jsonlint-cli/commit/a7fe762)), closes [#1](https://github.com/marionebl/jsonlint-cli/issues/1)
+
+
+### BREAKING CHANGES
+
+* *   removed the --quiet flag
+*   errors are always printed
+
+
+
 <a name="0.2.8"></a>
 ## [0.2.8](https://github.com/marionebl/jsonlint-cli/compare/v0.2.7...v0.2.8) (2016-03-01)
 

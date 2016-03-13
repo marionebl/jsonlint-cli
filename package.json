@@ -1,6 +1,6 @@
 {
   "name": "jsonlint-cli",
-  "version": "0.2.8",
+  "version": "1.0.0",
   "description": "cli wrapper for jsonlint",
   "main": "index.js",
   "scripts": {
