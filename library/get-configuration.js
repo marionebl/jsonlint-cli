@@ -50,6 +50,7 @@ function load(directory) {
 			})
 	).then(configurations => {
 		return configurations
+			.reverse()
 			.reduce((registry, config) => {
 				return merge({}, registry, config);
 			}, {});
