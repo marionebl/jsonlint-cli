@@ -1,3 +1,14 @@
+<a name="1.0.1"></a>
+## [1.0.1](https://github.com/marionebl/jsonlint-cli/compare/v1.0.0...v1.0.1) (2016-03-17)
+
+
+### Bug Fixes
+
+* **configuration:** employ correct precedence for configuration files ([742df22](https://github.com/marionebl/jsonlint-cli/commit/742df22))
+* **configuration:** filter ignored files before reading ([17c32f4](https://github.com/marionebl/jsonlint-cli/commit/17c32f4)), closes [#2](https://github.com/marionebl/jsonlint-cli/issues/2)
+
+
+
 <a name="1.0.0"></a>
 # [1.0.0](https://github.com/marionebl/jsonlint-cli/compare/v0.2.8...v1.0.0) (2016-03-13)
 
