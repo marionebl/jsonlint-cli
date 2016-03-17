@@ -1,0 +1,16 @@
+{
+  "rules": {
+    "scope-enum": [
+      2,
+      "always",
+      [
+        "release",
+        "system",
+        "validation",
+        "parsing",
+        "configuration",
+        "cli"
+      ]
+    ]
+  }
+}
