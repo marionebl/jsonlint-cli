@@ -2,21 +2,26 @@
 const merge = require('lodash').merge;
 
 const cli = require('./library/cli');
+const listFiles = require('./library/list-files');
 const fetchSchema = require('./library/fetch-schema');
 const getConfiguration = require('./library/get-configuration');
 const getInput = require('./library/get-input');
 const resolveKeys = require('./library/resolve-keys');
-const filter = require('./library/filter');
 const lint = require('./library/lint');
 const format = require('./library/format');
 const print = require('./library/print');
+const filter = require('./library/filter');
 const pkg = require('./package');
 
 // Main program
 function main(options) {
-	return getInput(options.input)
+	return listFiles(options.input)
 		// Load file configurations
 		.then(getConfiguration)
+		// Filter files according to ignore config
+		.then(filter)
+		// Load file contents
+		.then(getInput)
 		// Fetch json schemas
 		.then(fetchSchema)
 		// Wait for resolution of async tasks
@@ -27,10 +32,6 @@ function main(options) {
 				input.configuration = merge({}, input.configuration, options.flags);
 				return input;
 			});
-		})
-		.then(inputs => {
-			// Filter ignored files
-			return inputs.filter(filter);
 		})
 		.then(inputs => {
 			// Lint and validate files

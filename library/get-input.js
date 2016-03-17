@@ -1,30 +1,25 @@
+const debuglog = require('util').debuglog;
 const readFileNodeback = require('fs').readFile;
-const dirname = require('path').dirname;
-const resolve = require('path').resolve;
-const getStdin = require('get-stdin');
-const globby = require('globby');
 const denodeify = require('denodeify');
 
 const readFile = denodeify(readFileNodeback);
+const log = debuglog('jsonlint-cli');
 
-module.exports = input => {
-	if (input.length === 0) {
-		return Promise.resolve(
-			[{
-				content: getStdin.buffer(),
-				directory: process.cwd(),
-				path: process.cwd()
-			}]
-		);
-	}
-	return globby(input)
-		.then(paths => {
-			return paths.map(path => {
-				return {
-					content: readFile(path),
-					directory: dirname(resolve(process.cwd(), path)),
-					path: resolve(process.cwd(), path)
-				};
-			});
-		});
+module.exports = files => {
+	log('reading files:', files.length);
+	return Promise.all(
+		files.map(file => {
+			return file.configuration
+				.then(configuration => {
+					if (file.content && file.piped) {
+						return file;
+					}
+					return readFile(file.path)
+						.then(content => {
+							file.content = content;
+							return file;
+						})
+				});
+		})
+	);
 };
