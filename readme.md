@@ -60,7 +60,7 @@ searching upwards from `process.cwd()` or the file path if specified.
 
 ```js
 {
-  "validate": "", // schema uri to validate agains
+  "validate": "", // schema uri to validate against
   "ignore": ["node_modules/**/*"], // glob patterns to ignore
   "indent": "", // indent to use for pretty-printed output
   "env": "json-schema-draft-04", // json schema env version to use
