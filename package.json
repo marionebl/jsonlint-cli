@@ -62,7 +62,7 @@
     "jsonlint": "1.6.2",
     "lodash": "4.6.1",
     "meow": "3.7.0",
-    "minimatch": "3.0.0",
+    "minimatch": "3.0.4",
     "mkdirp": "0.5.1",
     "omni-fetch": "0.1.0",
     "path-exists": "2.1.0"
