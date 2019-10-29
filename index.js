@@ -37,20 +37,47 @@ function main(options) {
 			// Lint and validate files
 			return inputs.map(input => {
 				input.content.path = input.path;
-				input.data = lint(input.content, input.configuration, input.schema);
+				try {
+					input.data = lint(input.content, input.configuration, input.schema);
+				} catch (error) {
+					input.error = error;
+				}
 				return input;
 			});
 		})
 		.then(inputs => {
 			// Format results
 			return inputs.map(input => {
-				input.formatted = format(input.data, input.configuration);
+				if (input.error) {
+					return input;
+				}
+				try {
+					input.formatted = format(input.data, input.configuration);
+				} catch (error) {
+					input.error = error;
+				}
 				return input;
 			});
 		})
 		.then(inputs => {
 			// Print results
-			inputs.forEach(print);
+			let lastError = null;
+			for (const input of inputs) {
+				if (input.error) {
+					if (input.error.type === pkg.name) {
+						input.error.reported = true;
+						console.error(input.error.message);
+						lastError = input.error;
+					} else {
+						throw input.error;
+					}
+				} else {
+					print(input);
+				}
+			}
+			if (lastError) {
+				throw lastError;
+			}
 			return inputs;
 		});
 }
@@ -60,7 +87,9 @@ main(cli)
 	.catch(error =>
 		setTimeout(() => {
 			if (error.type === pkg.name) {
-				console.error(error.message);
+				if (!error.reported) {
+					console.error(error.message);
+				}
 				process.exit(1);
 			}
 			throw error;
