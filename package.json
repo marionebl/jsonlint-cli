@@ -60,7 +60,7 @@
     "isomorphic-fetch": "2.2.1",
     "jjv": "1.0.2",
     "jsonlint": "1.6.2",
-    "lodash": "4.6.1",
+    "lodash": "4.17.21",
     "meow": "3.7.0",
     "minimatch": "3.0.4",
     "mkdirp": "0.5.1",
